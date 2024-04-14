@@ -27,14 +27,16 @@ class TestContent(TestCase):
         """Проверка передачи отдельной заметки в списке для автора."""
         self.client.force_login(self.author)
         response = self.client.get(URL_NOTE_LIST)
-        object_list = response.context[CONTEXT_OBJECT_LIST]
+        object_list = response.context.get(CONTEXT_OBJECT_LIST)
+        self.assertIsNotNone(object_list)
         self.assertTrue((self.notes in object_list))
 
     def test_notes_list_for_other_users(self):
         """Проверка передачи отдельной заметки автора другому пользователю."""
         self.client.force_login(self.reader)
         response = self.client.get(URL_NOTE_LIST)
-        object_list = response.context[CONTEXT_OBJECT_LIST]
+        object_list = response.context.get(CONTEXT_OBJECT_LIST)
+        self.assertIsNotNone(object_list)
         self.assertFalse((self.notes in object_list))
 
     def test_pages_contains_form(self):
