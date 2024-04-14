@@ -1,8 +1,8 @@
 import pytest
 from django.conf import settings
 from django.urls import reverse
-from news.forms import CommentForm
 
+from news.forms import CommentForm
 
 URL_HOME: str = reverse('news:home')
 CONTEXT_OBJECT_HOME: str = 'object_list'
@@ -16,7 +16,8 @@ def test_news_count(client, all_news):
     """Количество новостей на главной странице — не более 10."""
     url = URL_HOME
     response = client.get(url)
-    object_list = response.context[CONTEXT_OBJECT_HOME]
+    object_list = response.context.get(CONTEXT_OBJECT_HOME)
+    assert object_list is not None
     news_count = object_list.count()
     assert news_count == settings.NEWS_COUNT_ON_HOME_PAGE
 
@@ -25,7 +26,8 @@ def test_news_order(client, all_news):
     """Новости отсортированы от самой свежей к самой старой."""
     url = URL_HOME
     response = client.get(url)
-    object_list = response.context[CONTEXT_OBJECT_HOME]
+    object_list = response.context.get(CONTEXT_OBJECT_HOME)
+    assert object_list is not None
     all_dates = [news.date for news in object_list]
     sorted_dates = sorted(all_dates, reverse=True)
     assert all_dates == sorted_dates

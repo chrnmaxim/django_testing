@@ -4,7 +4,6 @@ import pytest
 from django.urls import reverse
 from pytest_django.asserts import assertRedirects
 
-
 URL_EDIT_DELETE: tuple[str] = ('news:edit', 'news:delete')
 
 
