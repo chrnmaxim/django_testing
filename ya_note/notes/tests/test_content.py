@@ -6,6 +6,8 @@ from notes.forms import NoteForm
 from notes.models import Note
 
 User = get_user_model()
+URL_NOTE_LIST: str = reverse('notes:list')
+CONTEXT_OBJECT_LIST: str = 'object_list'
 
 
 class TestContent(TestCase):
@@ -21,19 +23,19 @@ class TestContent(TestCase):
             author=cls.author
         )
 
-    def test_notes_list_for_different_users(self):
-        """Проверка передачи отдельной заметки в списке."""
-        users_note_statutes = (
-            (self.author, True,),
-            (self.reader, False),
-        )
-        url = reverse('notes:list')
-        for user, note_in_list in users_note_statutes:
-            self.client.force_login(user)
-            with self.subTest(user=user, note_in_list=note_in_list):
-                response = self.client.get(url)
-                object_list = response.context['object_list']
-                self.assertEqual((self.notes in object_list), note_in_list)
+    def test_notes_list_for_authors(self):
+        """Проверка передачи отдельной заметки в списке для автора."""
+        self.client.force_login(self.author)
+        response = self.client.get(URL_NOTE_LIST)
+        object_list = response.context[CONTEXT_OBJECT_LIST]
+        self.assertTrue((self.notes in object_list))
+
+    def test_notes_list_for_other_users(self):
+        """Проверка передачи отдельной заметки автора другому пользователю."""
+        self.client.force_login(self.reader)
+        response = self.client.get(URL_NOTE_LIST)
+        object_list = response.context[CONTEXT_OBJECT_LIST]
+        self.assertFalse((self.notes in object_list))
 
     def test_pages_contains_form(self):
         """Проверка передачи формы  при создании и редактировании заметки."""
